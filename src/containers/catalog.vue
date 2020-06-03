@@ -1,12 +1,15 @@
 <template>
-  <div class="products">
-    <item v-for="item of filtered" :item="item" :key="item.product_id"/>
-    <item :type="'temp'" @addNewItem="createNew"/>
-  </div>
+	<div class="products" v-if="showCatalog">
+		<item v-for="item of filtered" :item="item" :key="item.product_id"/>
+	</div>
+	<div class="products" v-else>
+		<item :type="'card'" :item="chosenItem"/>   
+	</div>
 </template>
 
 <script>
 import item from '../components/item.vue';
+
 export default {
     components: { item },
     props: {
@@ -19,15 +22,18 @@ export default {
         return {
             items: [],
             filtered: [],
-            // url: 'https://raw.githubusercontent.com/GeekBrainsTutorial/online-store-api/master/responses/catalogData.json'
-            url: '/api/catalog'
+            productsUrl: '/api/product/profile',
+            showCatalog: true,
+            chosenItem: null,
         }
     },
+
     mounted() {
-        this.$parent.get(this.url)
+        this.$parent.get(this.productsUrl)
         .then(data => { 
             this.items = data; 
             this.filtered = data; 
+            console.log('products loaded')
         });
     },
     methods: {
@@ -39,20 +45,10 @@ export default {
                 this.filtered = this.items.filter(el => reg.test(el.product_name));
             }
         },
-        createNew(item) {
-            let newItem = JSON.parse(JSON.stringify(item));
-
-            this.$parent.post('/api/catalog', newItem)
-                .then( res => {
-                    if (res.id) {
-                        this.items.push({
-                            id_product: res.id,
-                            product_name: newItem.product_name,
-                            price: newItem.price
-                        })
-                    }
-                } )
-        }
+        showDetails(item) {
+        	this.showCatalog = false;
+        	this.chosenItem = item;
+        },
     },
     watch: {
         filter: {

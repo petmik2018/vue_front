@@ -1,11 +1,31 @@
 <template>
-  <div :class="type === 'catalog' || type === 'temp'? 'product-item' : 'cart-item'">
-    <img :src="`https://placehold.it/${type === 'catalog' || type === 'temp' ? '300x200' : '100x80'}`">
+  <div :class="type === 'catalog' ? 'product-item' : 'cart-item'">
+<!--   <div class="catalog">  -->  
 
     <template v-if="type == 'catalog'">
         <div class="desc">
-            <h1>{{ item.product_name }}</h1>
-            <p>{{ item.price }}</p>
+            <img :src=itemImage>
+            <h1>{{ item.name }}</h1>
+            <h1>Бренд {{ item.brand_name }}</h1>
+            <h1>Размер {{ stockInfo('size') }}</h1>
+            <h1>Цена {{ stockInfo('price') }}</h1>
+            <button class="buy-btn" name="buy-btn" @click="$parent.showDetails(item)">Подробнее</button>
+        </div>
+    </template>
+
+    <template v-if="type == 'card'">
+    	<div class="desc">
+            <img :src=itemImage>
+            <h1>{{ item.name }}</h1>
+            <h1>Бренд {{ item.brand_name }}</h1>
+            <h1>Цвет {{ item.color_name }}</h1>
+            <h1>{{ item.department_name }}</h1>
+            <ul class="key_points">
+                <li v-for="point in productDescription('key_points')">
+                    {{ point }}
+                </li>                
+            </ul>
+            <h5>{{ productDescription('description') }}</h5>
             <button class="buy-btn" name="buy-btn" @click="$parent.$emit('add', item)">Купить</button>
         </div>
     </template>
@@ -21,33 +41,18 @@
         </div>
     </template>
 
-    <template v-if="type === 'temp'">
-        <div class="desc">
-            <label >
-                <input type="text" placeholder="Item name" v-model="newProduct.product_name" class="w-50">
-            </label>
-            <label >
-                <input type="number" placeholder="Item price" v-model="newProduct.price" class="w-50">
-            </label>
-            <button class="buy-btn" 
-                name="buy-btn"
-                @click="createNew(newProduct)"
-            >Добавить</button>
-        </div>
-    </template>
   </div>
 </template>
 
 <script>
+import minmax from '../utils/minmax.js';
 export default {
-    data() {
-        return {
-            newProduct: {
-                product_name: '',
-                price: 0
-            }
-        }
-    },
+    // data() {
+    //     return {
+
+    //     }
+
+    // },
     props: {
         type: {
             type: String,
@@ -55,17 +60,27 @@ export default {
         },
         item: {
             type: Object
-        }
+        },
     },
     methods: {
-        createNew(item) {
-            if (item.product_name && item.price) {
-                this.$emit('addNewItem', item);
-                this.newProduct = {
-                    product_name: '',
-                    price: 0
-                }
-            }
+
+    },
+    computed: {
+    	itemImage() {
+    		try {
+    			let main_image_link = JSON.parse(this.item.image_links)[0];
+    			let main_image = require(`../assets/${main_image_link}`);
+    			return main_image
+    		} catch (err) {
+    			console.log(err)
+    			return '' 
+    		}
+    	},
+        productDescription() {
+            return key => JSON.parse(this.item.description)[key]
+        },
+        stockInfo() {
+            return key => minmax(this.item.get_stock, key);            
         }
     }
 }

@@ -19,7 +19,7 @@
         </div>
     </header>
     <main>
-        <catalog @add="addItem" :filter="filterString"/>
+        <catalog @add="addItem" :filter="filterString"/>         
     </main>
   </div>
 </template>
@@ -37,12 +37,16 @@ export default {
             showLogin: false,
             userIsAuthorized: localStorage.token,
             showBasket: false,
-            filterString: ''
+            filterString: '',
+            API: 'http://127.0.0.1:3000'
         }
     },
     methods: {
         get(url) {
-            return fetch(url).then(d => d.json());
+            console.log(url);
+            let getUrl = this.API + url;
+            console.log(getUrl);
+            return fetch(getUrl).then(d => d.json());
         },
         post(url, item) {
             return fetch(url, {

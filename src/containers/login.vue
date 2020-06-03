@@ -38,7 +38,7 @@ export default {
                       'password': this.password,
                     };
             this.$parent.showLogin = false;
-            return fetch('http://127.0.0.1:3000/api/login/', {
+            return fetch('http://127.0.0.1:3000/api/user/login/', {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json"
@@ -59,7 +59,7 @@ export default {
             console.log('Вы успешно вышли из системы')
        },
        getUsersList() {
-            return fetch('http://127.0.0.1:3000/api/profile', {
+            return fetch('http://127.0.0.1:3000/api/user/profile', {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export default {
         .then( data => { console.log(data) })
        },
        findUser(userName) {
-            return fetch('http://127.0.0.1:3000/api/profile', {
+            return fetch('http://127.0.0.1:3000/api/user/profile', {
                 method: 'GET',
                 headers: {
                     "Content-Type": "application/json",
