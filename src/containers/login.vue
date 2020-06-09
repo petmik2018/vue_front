@@ -48,14 +48,18 @@ export default {
             .then( response => response.json())
             .then( data => {                
                 localStorage.token = data.token;
+                localStorage.user_id = data.user_id;
+                localStorage.user_name = data.user_name;
                 this.$parent.userIsAuthorized = true;
                 console.log('Вы успешно зарегистрированы')
+                console.log(localStorage.user_id)
+                console.log(localStorage.user_name)
              })
-            .then(this.findUser(this.userName))
        },
        logOut() {
             localStorage.token = '';
-            this.$parent.userName = 'Unknown';
+            localStorage.user_id = null;
+            localStorage.user_name = 'Unknown';
             console.log('Вы успешно вышли из системы')
        },
        getUsersList() {
@@ -68,19 +72,6 @@ export default {
         .then( response => response.json())
         .then( data => { console.log(data) })
        },
-       findUser(userName) {
-            return fetch('http://127.0.0.1:3000/api/user/profile', {
-                method: 'GET',
-                headers: {
-                    "Content-Type": "application/json",
-                }
-        })
-        .then( response => response.json())
-        .then( data => {
-            let elem = data.find(el => el.email == userName);
-            this.$parent.userName = elem.name; 
-            })
-       }
 
     },
     computed: {

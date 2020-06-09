@@ -1,7 +1,7 @@
 <template>
   <div class="cart-block">
     <div class="d-flex">
-        <strong class="d-block">Всего товаров</strong> <div id="quantity"></div>
+        <strong class="d-block">Всего товаров</strong> <div id="quantity">{{ basketSummary.quantity }}</div>
     </div>
     <hr>
     
@@ -15,7 +15,7 @@
 
     <hr>
     <div class="d-flex">
-        <strong class="d-block">Общая ст-ть:</strong> <div id="price"></div>
+        <strong class="d-block">Общая ст-ть:</strong> <div id="price">{{ basketSummary.amount }}</div>
     </div>
 </div>
 </template>
@@ -34,29 +34,25 @@ export default {
     methods: {
         //добавить товар
         //удалить товар
-        add(item) {
-            let find = this.items.find(el => el.id_product == item.id_product);
-            if (!find) {
-                let newItem = Object.assign({}, item, {quantity: 1})
-                this.$parent.post(this.url, newItem)
-                .then(res => {
-                    if (res.status) {
-                        this.items.push(newItem);
-                    } else {
-                        console.log('error add new item');
-                    }
-                });
-            } else {
-                this.$parent.put(this.url + `/${find.id_product}`, { amount: 1 })
-                .then(res => {
-                    if (res.status) {
-                        find.quantity++;
-                    } else {
-                        console.log('error add item');
-                    }
-                })
-            }
+        add(item, selectedSizes) {
+        	selectedSizes.forEach(el => {
+            	let newItemString = JSON.stringify({
+            										product: item.id,
+            										name: item.name,
+            										size: el.size,
+            										price: el.price,
+            										quantity: 1
+            										});
+            	let newItem = JSON.parse(newItemString);
+            	let find = this.items.find(el => el.id == newItem.id && el.size == newItem.size);
+            	if (!find) {
+            		this.items.push(newItem);
+            	} else {
+            		find.quantity++;
+            	}
+            });           
         },
+
         remove(item) {
             if (item.quantity <= 1) {
                 this.$parent.delete(this.url + `/${item.id_product}`)
@@ -79,6 +75,30 @@ export default {
             }
         }
     },
+
+    // add(item) {
+    //         let find = this.items.find(el => el.id_product == item.id_product);
+    //         if (!find) {
+    //             let newItem = Object.assign({}, item, {quantity: 1})
+    //             this.$parent.post(this.url, newItem)
+    //             .then(res => {
+    //                 if (res.status) {
+    //                     this.items.push(newItem);
+    //                 } else {
+    //                     console.log('error add new item');
+    //                 }
+    //             });
+    //         } else {
+    //             this.$parent.put(this.url + `/${find.id_product}`, { amount: 1 })
+    //             .then(res => {
+    //                 if (res.status) {
+    //                     find.quantity++;
+    //                 } else {
+    //                     console.log('error add item');
+    //                 }
+    //             })
+    //         }
+    //     },
     mounted() {
         this.$parent.get(this.url)
         .then(data => { 
@@ -87,8 +107,15 @@ export default {
         //запрос - размещение
     },
     computed: {
-        //всего товаров
-        //общая стоимость
+        basketSummary() {
+        	let quantity = 0;
+        	let amount = 0;
+        	this.items.forEach(elem => {
+        		quantity += elem.quantity;
+        		amount += elem.quantity * elem.price;
+        	})
+        	return {"quantity": quantity, "amount": amount}
+        }
     }
 }
 </script>

@@ -33,7 +33,6 @@ export default {
     components: { login, catalog, basket, 'filter-item': filterItem },
     data() {
         return {
-        	userName: 'Unknown',
             showLogin: false,
             userIsAuthorized: localStorage.token,
             showBasket: false,
@@ -80,13 +79,19 @@ export default {
         filterElements(payload) {
             this.filterString = payload;
         },
-        addItem(item) {
-            this.$refs.basket.add(item);
+        addItem(item, selectedSizes) {
+            this.$refs.basket.add(item, selectedSizes);
         },
         logout() {
         	this.$refs.login.logOut();
         	this.userIsAuthorized = false;
         }
+    },
+    computed: {
+        userName() {
+            return localStorage.user_name
+        }
+
     }
 }
 </script>
