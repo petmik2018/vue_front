@@ -33,7 +33,6 @@ export default {
         .then(data => { 
             this.items = data; 
             this.filtered = data; 
-            console.log('products loaded')
         });
     },
     methods: {

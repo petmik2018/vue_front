@@ -51,9 +51,7 @@ export default {
                 localStorage.user_id = data.user_id;
                 localStorage.user_name = data.user_name;
                 this.$parent.userIsAuthorized = true;
-                console.log('Вы успешно зарегистрированы')
-                console.log(localStorage.user_id)
-                console.log(localStorage.user_name)
+                this.$parent.loadBasket(localStorage.user_id);
              })
        },
        logOut() {

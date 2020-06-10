@@ -42,7 +42,6 @@ export default {
     },
     methods: {
         get(url) {
-            console.log(url);
             let getUrl = this.API + url;
             console.log(getUrl);
             return fetch(getUrl).then(d => d.json());
@@ -85,6 +84,10 @@ export default {
         logout() {
         	this.$refs.login.logOut();
         	this.userIsAuthorized = false;
+            this.$refs.basket.clearBasket();
+        },
+        loadBasket(user_id) {
+            this.$refs.basket.loadUserBasket(user_id);
         }
     },
     computed: {

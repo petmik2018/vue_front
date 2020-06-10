@@ -81,6 +81,7 @@ export default {
     computed: {
     	itemImage() {
     		try {
+                // item.image_links - строка, а в ней спрятан массив!!!
     			let main_image_link = JSON.parse(this.item.image_links)[0];
     			let main_image = require(`../assets/${main_image_link}`);
     			return main_image

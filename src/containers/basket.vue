@@ -38,6 +38,7 @@ export default {
         	selectedSizes.forEach(el => {
             	let newItemString = JSON.stringify({
             										product: item.id,
+            										image_links: item.image_links,
             										name: item.name,
             										size: el.size,
             										price: el.price,
@@ -47,6 +48,7 @@ export default {
             	let find = this.items.find(el => el.id == newItem.id && el.size == newItem.size);
             	if (!find) {
             		this.items.push(newItem);
+            		console.log(this.items)
             	} else {
             		find.quantity++;
             	}
@@ -73,38 +75,25 @@ export default {
                     }
                 })
             }
-        }
+        },
+        loadUserBasket(user_id) {
+        	let userIdStr = String(user_id);
+        	if (userIdStr == "null") {
+        		console.log(`Ошибка загрузки корзины пользователя ${userIdStr}`)
+	        } else {
+        		this.$parent.get(this.url + `/${user_id}`)
+	        	.then(data => { 
+	            	this.items = data;             	           	
+	        		});
+	        }      		
+    	},
+        clearBasket() {
+        	this.items = [];
+        },
     },
 
-    // add(item) {
-    //         let find = this.items.find(el => el.id_product == item.id_product);
-    //         if (!find) {
-    //             let newItem = Object.assign({}, item, {quantity: 1})
-    //             this.$parent.post(this.url, newItem)
-    //             .then(res => {
-    //                 if (res.status) {
-    //                     this.items.push(newItem);
-    //                 } else {
-    //                     console.log('error add new item');
-    //                 }
-    //             });
-    //         } else {
-    //             this.$parent.put(this.url + `/${find.id_product}`, { amount: 1 })
-    //             .then(res => {
-    //                 if (res.status) {
-    //                     find.quantity++;
-    //                 } else {
-    //                     console.log('error add item');
-    //                 }
-    //             })
-    //         }
-    //     },
     mounted() {
-        this.$parent.get(this.url)
-        .then(data => { 
-            this.items = data.contents; 
-        });
-        //запрос - размещение
+    	this.loadUserBasket(localStorage.user_id);
     },
     computed: {
         basketSummary() {
